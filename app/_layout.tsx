@@ -91,7 +91,6 @@ function Main() {
     | "ForgotPasswordReset"
   >("Welcome");
 
-  // Auto-login goes to Home
   useEffect(() => {
     if (user) setScreen("Home");
   }, [user]);
@@ -119,7 +118,7 @@ function BackButton({ goTo, to }: { goTo: (s: any) => void; to: string }) {
   );
 }
 
-// ---------------- Screens ----------------
+// ---------------- Welcome Screen ----------------
 function WelcomeScreen({ goTo }: { goTo: (s: any) => void }) {
   return (
     <SafeAreaView style={styles.container}>
@@ -140,7 +139,6 @@ function WelcomeScreen({ goTo }: { goTo: (s: any) => void }) {
 // ---------------- Sign In ----------------
 function SignInScreen({ goTo }: { goTo: (s: any) => void }) {
   const { setUser, setVerifyCode } = useAuth();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -159,10 +157,8 @@ function SignInScreen({ goTo }: { goTo: (s: any) => void }) {
 
   function handleForgotPassword() {
     if (!email) return Alert.alert("Enter your email first");
-
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setVerifyCode(code);
-
     Alert.alert("Verification Code", `Your code is: ${code}`);
     goTo("ForgotPasswordVerify");
   }
@@ -222,20 +218,15 @@ function SignUpScreen({ goTo }: { goTo: (s: any) => void }) {
   }
 
   function handleNext() {
-    if (!email || !password || !confirmPassword)
-      return Alert.alert("Please fill in all fields");
-    if (password !== confirmPassword)
-      return Alert.alert("Passwords do not match");
-    if (strength < 3)
-      return Alert.alert("Weak password", "Please choose a stronger password");
-
+    if (!email || !password || !confirmPassword) return Alert.alert("Please fill in all fields");
+    if (password !== confirmPassword) return Alert.alert("Passwords do not match");
+    if (strength < 3) return Alert.alert("Weak password", "Please choose a stronger password");
     goTo("Role");
   }
 
   return (
     <SafeAreaView style={styles.container}>
       <BackButton goTo={goTo} to="Welcome" />
-
       <ScrollView>
         <Text style={styles.title}>Sign Up</Text>
 
@@ -270,7 +261,7 @@ function SignUpScreen({ goTo }: { goTo: (s: any) => void }) {
         />
 
         <View style={styles.strengthBarContainer}>
-          {[0,1,2,3].map(i => (
+          {[0, 1, 2, 3].map(i => (
             <View
               key={i}
               style={[
@@ -295,10 +286,8 @@ function RoleSelectionScreen({ goTo }: { goTo: (s: any) => void }) {
 
   function handleRole(r: string) {
     setRole(r);
-
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setVerifyCode(code);
-
     Alert.alert("Verification Code", `Your code is: ${code}`);
     goTo("VerifyCode");
   }
@@ -306,7 +295,6 @@ function RoleSelectionScreen({ goTo }: { goTo: (s: any) => void }) {
   return (
     <SafeAreaView style={styles.container}>
       <BackButton goTo={goTo} to="SignUp" />
-
       <Text style={styles.title}>Select Role</Text>
 
       <TouchableOpacity style={styles.button} onPress={() => handleRole("Admin")}>
@@ -355,7 +343,7 @@ function VerifyCodeScreen({ goTo }: { goTo: (s: any) => void }) {
   );
 }
 
-// ---------------- Forgot Password Verify ----------------
+// ---------------- Forgot Password ----------------
 function ForgotPasswordVerifyScreen({ goTo }: { goTo: (s: any) => void }) {
   const { verifyCode } = useAuth();
   const [code, setCode] = useState("");
@@ -368,7 +356,6 @@ function ForgotPasswordVerifyScreen({ goTo }: { goTo: (s: any) => void }) {
   return (
     <SafeAreaView style={styles.container}>
       <BackButton goTo={goTo} to="SignIn" />
-
       <Text style={styles.title}>Verify Code</Text>
 
       <TextInput
@@ -404,12 +391,9 @@ function ForgotPasswordResetScreen({ goTo }: { goTo: (s: any) => void }) {
   }
 
   async function handleReset() {
-    if (!newPassword || !confirmPassword)
-      return Alert.alert("Fill in all fields");
-    if (newPassword !== confirmPassword)
-      return Alert.alert("Passwords do not match");
-    if (strength < 3)
-      return Alert.alert("Weak password", "Choose a stronger one");
+    if (!newPassword || !confirmPassword) return Alert.alert("Fill in all fields");
+    if (newPassword !== confirmPassword) return Alert.alert("Passwords do not match");
+    if (strength < 3) return Alert.alert("Weak password", "Choose a stronger one");
 
     try {
       setLoading(true);
@@ -427,7 +411,6 @@ function ForgotPasswordResetScreen({ goTo }: { goTo: (s: any) => void }) {
   return (
     <SafeAreaView style={styles.container}>
       <BackButton goTo={goTo} to="SignIn" />
-
       <Text style={styles.title}>Reset Password</Text>
 
       <TextInput
@@ -513,22 +496,17 @@ function ProfileScreen({ goTo }: { goTo: (s: any) => void }) {
 
       <Text style={styles.title}>My Profile</Text>
 
+      {/* Display Email */}
       <Text style={{ color: "white", fontSize: 20, marginBottom: 5 }}>Email:</Text>
       <Text style={{ color: "#93c5fd", fontSize: 18, marginBottom: 20 }}>
-        {user?.email}
+        {user?.email || "Not set"}
       </Text>
 
+      {/* Display Role */}
       <Text style={{ color: "white", fontSize: 20, marginBottom: 5 }}>Role:</Text>
       <Text style={{ color: "#93c5fd", fontSize: 18, marginBottom: 30 }}>
         {role || "Not set"}
       </Text>
-
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: "#1e3a8a" }]}
-        onPress={() => Alert.alert("Coming Soon", "Profile editing coming later!")}
-      >
-        <Text style={styles.buttonText}>Edit Profile</Text>
-      </TouchableOpacity>
 
       <TouchableOpacity
         style={[styles.button, { backgroundColor: "#1e3a8a" }]}
@@ -554,10 +532,9 @@ function ProfileScreen({ goTo }: { goTo: (s: any) => void }) {
   );
 }
 
+
 // ---------------- Home Screen ----------------
 function HomeScreen({ goTo }: { goTo: (s: any) => void }) {
-  const { role } = useAuth();
-
   return (
     <SafeAreaView style={homeStyles.container}>
 
@@ -667,3 +644,4 @@ const homeStyles = StyleSheet.create({
     backgroundColor: "white",
   },
 });
+
