@@ -11,9 +11,18 @@ import {
   View,
 } from "react-native";
 
+// Icons for HomeScreen
+import { Ionicons, Feather } from "@expo/vector-icons";
+
 // Firebase
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  User
+} from "firebase/auth";
 
 // ---------------- Firebase Config ----------------
 const firebaseConfig = {
@@ -169,7 +178,7 @@ function SignInScreen({ goTo }: { goTo: (s: any) => void }) {
 function SignUpScreen({ goTo }: { goTo: (s: any) => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  ￼const [confirmPassword, setConfirmPassword] = useState("");
   const [strength, setStrength] = useState(0);
 
   function calculateStrength(pw: string) {
@@ -327,6 +336,7 @@ function ForgotPasswordResetScreen({ goTo }: { goTo: (s: any) => void }) {
   );
 }
 
+// ------------- homescreen------------------
 function HomeScreen({ goTo }: { goTo: (s: any) => void }) {
   const { setUser, role } = useAuth();
 
@@ -337,11 +347,38 @@ function HomeScreen({ goTo }: { goTo: (s: any) => void }) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Welcome {role} 🎉</Text>
-      <TouchableOpacity style={styles.button} onPress={handleSignOut}>
-        <Text style={styles.buttonText}>Sign Out</Text>
+    <SafeAreaView style={homeStyles.container}>
+
+      {/* Search bar */}
+      <View style={homeStyles.searchBar}>
+        <Ionicons name="menu" size={26} color="#0b0b0b" />
+        <TextInput
+          placeholder="Search for items here...."
+          placeholderTextColor="#666"
+          style={homeStyles.searchInput}
+        />
+        <Feather name="search" size={22} color="#0b0b0b" />
+      </View>
+
+      {/* Big magnifying glass */}
+      <View style={homeStyles.bigIconContainer}>
+        <Feather name="search" size={180} color="#154889" />
+      </View>
+
+      {/* List menu button */}
+      <TouchableOpacity style={homeStyles.listButton}>
+        <Text style={homeStyles.listButtonText}>List Menu</Text>
+        <Ionicons name="chevron-forward" size={22} color="white" />
       </TouchableOpacity>
+
+      {/* Bottom nav */}
+      <View style={homeStyles.bottomNav}>
+        <Ionicons name="person-circle-outline" size={32} color="#0b0b0b" />
+        <Ionicons name="cart-outline" size={32} color="#154889" />
+        <Ionicons name="location-outline" size={32} color="#0b0b0b" />
+        <Ionicons name="scan-outline" size={32} color="#0b0b0b" />
+      </View>
+
     </SafeAreaView>
   );
 }
@@ -358,4 +395,66 @@ const styles = StyleSheet.create({
   strengthBarContainer: { flexDirection:"row", marginVertical:5, justifyContent:"space-between" },
   strengthBar: { flex:1, height:6, marginHorizontal:2, borderRadius:3 },
 });
+
+//-------homescreen styles------------
+const homeStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "white",
+    paddingTop: 20,
+    alignItems: "center",
+  },
+
+  searchBar: {
+    backgroundColor: "#dbe5f1",
+    width: "90%",
+    borderRadius: 30,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: "#0b0b0b",
+  },
+
+  bigIconContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  listButton: {
+    flexDirection: "row",
+    backgroundColor: "#002c6d",
+    width: "70%",
+    paddingVertical: 18,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+    gap: 10,
+  },
+  listButtonText: {
+    color: "white",
+    fontSize: 22,
+    fontWeight: "600",
+  },
+
+  bottomNav: {
+    width: "100%",
+    paddingVertical: 12,
+    borderTopWidth: 2,
+    borderColor: "#e5e5e5",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "white",
+  },
+});
+
+
+
 
