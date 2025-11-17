@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 
 // OpenAI initialization
 const openai = new OpenAI({
-  apiKey: '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',
+  apiKey: 'Replace with the actual key when youre ready to test',
   dangerouslyAllowBrowser: true,
 });
 
@@ -204,3 +204,4 @@ Remember: Respond with ONLY valid JSON. No markdown code blocks, no explanations
     throw error;
   }
 }
+
