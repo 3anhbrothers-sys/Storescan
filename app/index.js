@@ -1,5 +1,6 @@
 import { Redirect } from 'expo-router';
 
 export default function Index() {
-  return <Redirect href="/ask-ai" />;
+  // Start at location input screen instead of ask-ai
+  return <Redirect href="/location-input" />;
 }
