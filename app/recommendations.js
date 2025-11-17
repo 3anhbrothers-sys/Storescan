@@ -1,18 +1,19 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
 export default function Recommendation() {
   const router = useRouter();
   const params = useLocalSearchParams();
+  const [feedback, setFeedback] = useState(null);
   
-  // Get the AI response from the previous screen
+  // Get the data that was passed from the previous screen
   const aiResponseRaw = params.aiResponse;
   
-  // Parse the JSON data
   let aiData = { summary: '', stores: [] };
   let hasError = false;
   
+  // Try to parse the JSON data from AI
   try {
     if (aiResponseRaw) {
       const parsed = typeof aiResponseRaw === 'string' ? JSON.parse(aiResponseRaw) : aiResponseRaw;
@@ -20,22 +21,53 @@ export default function Recommendation() {
     } else {
       hasError = true;
     }
-  } catch (e) {
-    console.error('Error parsing AI response:', e);
+  } catch (error) {
+    console.error('Error reading AI response:', error);
     hasError = true;
   }
   
   const stores = aiData.stores || [];
   const summary = aiData.summary;
   
-  // Check if we have valid data
+  // Make sure we got valid data
   if (!summary || stores.length === 0) {
     hasError = true;
   }
 
+  // Show error message if something went wrong
+  if (hasError) {
+    return (
+      <View style={styles.errorContainer}>
+        <View style={styles.header}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerText}>Ask AI</Text>
+          <View style={styles.backButton} />
+        </View>
+        
+        <View style={styles.errorContent}>
+          <Text style={styles.errorIcon}>❌</Text>
+          <Text style={styles.errorTitle}>No Results Found</Text>
+          <Text style={styles.errorMessage}>
+            We couldn't find any recommendations for your search. Please try asking a different question.
+          </Text>
+          <TouchableOpacity 
+            style={styles.errorButton}
+            onPress={() => router.back()}
+          >
+            <Text style={styles.errorButtonText}>Try Again</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.container}>
-      {/* Header with Back Button */}
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton}
@@ -47,15 +79,13 @@ export default function Recommendation() {
         <View style={styles.backButton} />
       </View>
 
-      {/* AI Response Section */}
+      {/* Show the AI's summary */}
       <View style={styles.responseSection}>
         <Text style={styles.responseTitle}>Recommendations</Text>
-        <Text style={styles.responseText}>
-          {summary}
-        </Text>
+        <Text style={styles.responseText}>{summary}</Text>
       </View>
 
-      {/* Store Cards */}
+      {/* Show each store as a card */}
       {stores.map((store, index) => (
         <View key={index} style={styles.storeCard}>
           <View style={styles.storeHeader}>
@@ -102,6 +132,45 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1a1a1a',
+  },
+  errorContainer: {
+    flex: 1,
+    backgroundColor: '#1a1a1a',
+  },
+  errorContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  errorIcon: {
+    fontSize: 60,
+    marginBottom: 20,
+  },
+  errorTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  errorMessage: {
+    fontSize: 16,
+    color: '#aaa',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 30,
+  },
+  errorButton: {
+    backgroundColor: '#4A7FC1',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 25,
+  },
+  errorButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
   header: {
     padding: 20,
